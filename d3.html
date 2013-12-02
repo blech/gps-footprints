@@ -18,16 +18,19 @@ body {
 
 .footprint {
     fill: #c33;
+    fill-opacity: 0.02;
+
     stroke: #f00;
     stroke-linejoin: round;
     stroke-width: 1;
-    opacity: 0.2;
+    stroke-opacity: 0.2;
 }
 
 </style>
 </head>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script>
 
@@ -49,8 +52,15 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", width/2);
 
+queue()
+    .defer(d3.json, "world-110m.json")
+    .defer(d3.json, "satellites.json")
+    .await(ready);
 
-d3.json("world-110m.json", function(error, world) {
+function load_world(error, data) {world=data}
+function load_satellites(error, data) {satellites=data}
+
+function ready(error, world, satellites) {
   var land = topojson.feature(world, world.objects.land);
 
   var projection = d3.geo.equirectangular()
@@ -66,18 +76,19 @@ d3.json("world-110m.json", function(error, world) {
       .attr("class", "land")
       .attr("d", path);
 
-  circle = d3.geo.circle(); // 66.32
-  svg.insert("path")
-    .datum(function(d) {
-       return circle
-           .origin([0, 0])
-           .angle(66.32)();
-    })
-      .attr("class", "footprint")
-      .attr("d", path);  
+  var circle = d3.geo.circle();
+  for (var i = 0; i < satellites.length; i++) {
+      svg.insert("path")
+        .datum(function(d) {
+           return circle
+               .origin([satellites[i]['lat'], satellites[i]['lon']])
+               .angle(66.32)();
+          })
+          .attr("class", "footprint "+satellites[i]['name'])
+          .attr("d", path);  
+    }
 
-});
-
+}
 
 </script>
 </body>
