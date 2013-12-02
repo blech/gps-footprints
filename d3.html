@@ -10,10 +10,18 @@ body {
 }
 
 .land { 
-    fill: #777; 
+    fill: #eee; 
     stroke: #000;
     stroke-linejoin: round;
     stroke-width: 0.3;
+}
+
+.footprint {
+    fill: #c33;
+    stroke: #f00;
+    stroke-linejoin: round;
+    stroke-width: 1;
+    opacity: 0.2;
 }
 
 </style>
@@ -57,6 +65,17 @@ d3.json("world-110m.json", function(error, world) {
       .datum(topojson.feature(world, world.objects.land))
       .attr("class", "land")
       .attr("d", path);
+
+  circle = d3.geo.circle(); // 66.32
+  svg.insert("path")
+    .datum(function(d) {
+       return circle
+           .origin([0, 0])
+           .angle(66.32)();
+    })
+      .attr("class", "footprint")
+      .attr("d", path);  
+
 });
 
 
