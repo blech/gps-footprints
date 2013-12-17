@@ -18,12 +18,17 @@ body {
 
 .footprint {
     fill: #c33;
-    fill-opacity: 0.2;
+    fill-opacity: 0.05;
 
     stroke: #f00;
     stroke-linejoin: round;
-    stroke-width: 2;
-    stroke-opacity: 1;
+    stroke-width: 0.5;
+    stroke-opacity: 0.5;
+}
+
+.footprint.invisible {
+    fill: none;
+    stroke: none;
 }
 
 .GIOVE-A, .GIOVE-B {
@@ -51,15 +56,13 @@ function getWidth() {
 var width = 1024;
 var height = 512;
 
-var timezones = []
-
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", width/2);
 
 queue()
     .defer(d3.json, "world-110m.json")
-    .defer(d3.json, "galileo.json")
+    .defer(d3.json, "satellites.json")
     .await(ready);
 
 function load_world(error, data) {world=data}
@@ -83,20 +86,33 @@ function ready(error, world, satellites) {
 
   var circle = d3.geo.circle();
   for (var i = 0; i < satellites.length; i++) {
+
+      if (satellites[i]['alt'] > 0) { 
+        visible = "visible";
+      } else {
+        visible = "invisible";
+      }
+
       svg.insert("path")
         .datum(function(d) {
            return circle
                .origin([satellites[i]['lat'], satellites[i]['lon']])
                .angle(66.32)();
           })
-          .attr("class", "footprint "+satellites[i]['name'])
-          .attr("d", path);
-      
-//       
-//           .append("text")
-//               .attr("dx", 0)
-//               .attr("dy", ".35em")
-//               .text(function(d) { return satellites[i]['name'] });;
+          .attr("class", "footprint "+satellites[i]['name']+" "+visible)
+          .attr("d", path)
+          .append("text")
+              .attr("dx", 0)
+              .attr("dy", ".35em")
+              .text(function(d) { return satellites[i]['name'] });
+
+//         .datum(function(d) {
+//            return circle
+//                .origin([satellites[i]['lat'], satellites[i]['lon']])
+//                .angle(0.1)();
+//           })
+//           .attr("class", "point "+satellites[i]['name']+" "+visible)
+//           .attr("d", path);
     }
 
 }
