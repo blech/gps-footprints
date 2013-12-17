@@ -9,6 +9,10 @@ body {
     padding: 0;
 }
 
+.fill {
+  fill: #fff;
+}
+
 .land { 
     fill: #eee; 
     stroke: #000;
@@ -26,10 +30,12 @@ body {
     stroke-opacity: 0.5;
 }
 
+/* 
 .footprint.invisible {
     fill: none;
     stroke: none;
 }
+ */
 
 .GIOVE-A, .GIOVE-B {
     fill: #33c;
@@ -54,11 +60,15 @@ function getWidth() {
 }
 
 var width = 1024;
-var height = 512;
+var height = 1024;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", width/2);
+    .attr("height", height);
+
+svg.append("use")
+    .attr("class", "fill")
+    .attr("xlink:href", "#sphere");
 
 queue()
     .defer(d3.json, "world-110m.json")
@@ -71,9 +81,11 @@ function load_satellites(error, data) {satellites=data}
 function ready(error, world, satellites) {
   var land = topojson.feature(world, world.objects.land);
 
-  var projection = d3.geo.equirectangular()
+  var projection = d3.geo.orthographic()
     .center([0, 0])
-    .scale(163)
+    .rotate([122.7, -37.7])
+    .scale(500)
+    .clipAngle(90)
     .translate([width / 2, height / 2]);
 
   var path = d3.geo.path()
