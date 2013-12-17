@@ -18,12 +18,17 @@ body {
 
 .footprint {
     fill: #c33;
-    fill-opacity: 0.02;
+    fill-opacity: 0.2;
 
     stroke: #f00;
     stroke-linejoin: round;
-    stroke-width: 1;
-    stroke-opacity: 0.2;
+    stroke-width: 2;
+    stroke-opacity: 1;
+}
+
+.GIOVE-A, .GIOVE-B {
+    fill: #33c;
+    stroke: #00f;
 }
 
 </style>
@@ -54,7 +59,7 @@ var svg = d3.select("body").append("svg")
 
 queue()
     .defer(d3.json, "world-110m.json")
-    .defer(d3.json, "satellites.json")
+    .defer(d3.json, "galileo.json")
     .await(ready);
 
 function load_world(error, data) {world=data}
@@ -85,7 +90,13 @@ function ready(error, world, satellites) {
                .angle(66.32)();
           })
           .attr("class", "footprint "+satellites[i]['name'])
-          .attr("d", path);  
+          .attr("d", path);
+      
+//       
+//           .append("text")
+//               .attr("dx", 0)
+//               .attr("dy", ".35em")
+//               .text(function(d) { return satellites[i]['name'] });;
     }
 
 }
