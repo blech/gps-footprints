@@ -25,7 +25,7 @@ def loadTLE(path):
     # print "%i satellites loaded into list"%len(satlist)
     return satlist
 
-def return_json():
+def return_json(observer):
     satellites = loadTLE('http://www.celestrak.com/NORAD/elements/gps-ops.txt')
 
     # glonass = satellites.extend(loadTLE('http://www.celestrak.com/NORAD/elements/glo-ops.txt'))
@@ -33,11 +33,16 @@ def return_json():
 
     structure = []
     for sat in satellites:
-        sat.compute()
+        sat.compute(observer)
         structure.append({'name': sat.name, 
                           'lat': sat.sublat*(180/pi), 
-                          'lon': sat.sublong*(180/pi), })
+                          'lon': sat.sublong*(180/pi), 
+                          'alt': sat.alt,
+                          'az': sat.az})
     
     return json.dumps(structure)
     
-print return_json()
+sf = ephem.Observer()
+sf.lon, sf.lat = '-122.7', '37.7'
+
+print return_json(sf)
